@@ -1,0 +1,8 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: ""
+    relative_path: /home/yhtsai/catkin_ws/src/tm700_demo/tm700_demo_test/urdf/tm700_demo.xacro
+  SRDF:
+    relative_path: config/tm700_demo.srdf
+  CONFIG:
+    generated_timestamp: 1475115094
