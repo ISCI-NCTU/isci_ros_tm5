@@ -1,68 +1,55 @@
 # ISCI techman_robot ROS repo
+A driver provides ROS support for techman robots. TM5_700 is available for ROS Indigo.  
 
-Fork from techman_robot repo
+- Thes packages were orignially fork from [kentsai0319](https://github.com/kentsai0319)
 
-**maintainer: Ren Hao, Yu Shien,yhtsai , Yueh Chuan**
+- **Maintainer: [Howard Chen](https://github.com/s880367), [Yueh Chuan](https://github.com/YuehChuan)**
 
-environment: ubuntu14.04 ROS indigo gazebo7
-
-##Prerequest
-Install gazebo 7 
-[realsense gazebo tutorial](https://paper.dropbox.com/doc/realsense-gazebo-DzoV2B9uNwcnfQbYvvvgL)
+- Environment: ubuntu14.04 ROS indigo 
 
 
-## compile package:
+## Overview
 
-this is ROS catkin_ws 
+* Action interface on */follow\_joint\_trajectory* for seamless integration with __MoveIt__
+* Publishes robot joint state on */joint\_states*
+* Publishes TCP position on */tool\_position*
+* Publishes TCP velocity on */tool\_velocity*
+* Publishes TCP force on */wrench*
+* Service call to set outputs on */tm\_driver/set\_io*
 
-```
-git clone https://github.com/ISCI-NCTU/techman_robot.git  techman_robot
 
-cd techman_robot
-```
+## Installation
+First set up a catkin workspace (see [this tutorials](http://wiki.ros.org/catkin/Tutorials)).  
+Then clone the repository into the src/ folder. It should look like  /path/to/your/catkin_workspace/src/techman_robot.  
+Make sure to source the correct setup file according to your workspace hierarchy, then use ```catkin_make``` to compile.  
+Note that this package depends on hardware_interface, and controller_manager.  
 
-edit below in environment.sh to your user name
 
-```cmake=
-vim environment.sh
-```
-source /home/<YOUR-USER-NAME>/Documents/techman_robot/devel/setup.bash
+## Usage with Moveit
 
-ex:
+### test in simulation:
 
-source /home/techman/Documents/techman_robot/devel/setup.bash
+To bring up moveit environment in simulation mode, run:  
+```roslaunch tm700_moveit_config tm700_moveit_planning_execution.launch```
 
-save and exit.
+### run with real robot:
 
-```
-source environment.sh 
+set up networking:
 
-catkin_make
-```
+1. Click on the network settings (double-arrow in the title bar) and select *Edit Connections*
+2. Locate the new connection (mine was *Wired Connection 1*) and select *Edit*. Under the IPv4 tab, set:
+    * address = 192.168.0.11 (or similar)
+    * netmask = 255.255.255.0
+3. Connect an ethernet cable and try to ping your connected robot:
+    * ```ping 192.168.0.10```
 
-## How to use:
+To bring up moveit environment and connect to real robot, run:  
+```roslaunch tm700_moveit_config tm700_moveit_planning_execution.launch sim:=False robot_ip:=192.168.0.10```
 
-```cmake=
-cd ~/techman_robot
-source environment.sh
-```
 
-####moveIt!
-
-```
-roslaunch tm700_moveit_config tm700_moveit_planning_execution.launch
-```
-
-####gazebo + realsense
-
-terminal 1.
-```
-roslaunch realsense_gazebo_plugin realsense.launch
-```
-terminal 2.
-```
-roslaunch tm_gazebo tm700.launch
-```
+## Usage with Gazebo
+To bring up the simulated robot in Gazebo, run:  
+```roslaunch tm_gazebo tm700.launch```
 
 
 
