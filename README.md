@@ -1,7 +1,7 @@
 # ISCI techman_robot ROS package
 A driver provides ROS support for techman robots. TM5_700 is available for ROS Indigo.  
 
-- Thes packages were orignially fork from [kentsai0319](https://github.com/kentsai0319) [yhtsai](https://github.com/yhtsai)
+- Thes packages were orignially fork from [kentsai0319](https://github.com/kentsai0319), [yhtsai](https://github.com/yhtsai)
 
 - **Maintainer: [Howard Chen](https://github.com/s880367), [Yueh Chuan](https://github.com/YuehChuan)**
 
