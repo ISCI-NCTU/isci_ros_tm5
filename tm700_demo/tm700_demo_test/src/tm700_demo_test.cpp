@@ -48,7 +48,7 @@
 
 //get current joint values of TM5
 void get_current_joint_values(moveit::planning_interface::MoveGroup& group,
-                              moveit::planning_interface::MoveGroup::Plan& plan,
+                              moveit::planning_interface::MoveGroup::Plan& plan
 														){
 		//if(!ros::ok()) return false;
 		bool success = false;
@@ -58,7 +58,7 @@ void get_current_joint_values(moveit::planning_interface::MoveGroup& group,
 
 		for(int i = 0; i<joint_value.size(); i++){
 			joint_value[i] = joint_value[i]*180/M_PI;
-			printf("Joint %d: %lf\n",i+1 joint_value[i]);
+			printf("Joint %d: %lf\n",i+1, joint_value[i]);
 		}
 }
 
