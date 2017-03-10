@@ -38,16 +38,17 @@
 #include <fstream>
 #include <string>
 #include <vector>
-
+#include <cmath>
 
 #include "tm_msgs/SetIO.h"
 //#include "tm_msgs/SetIORequest.h"
 //#include "tm_msgs/SetIOResponse.h"
 
 
+
+//get current joint values of TM5
 void get_current_joint_values(moveit::planning_interface::MoveGroup& group,
                               moveit::planning_interface::MoveGroup::Plan& plan,
-														  unsigned int max_try_times = 1
 														){
 		//if(!ros::ok()) return false;
 		bool success = false;
@@ -56,9 +57,9 @@ void get_current_joint_values(moveit::planning_interface::MoveGroup& group,
 		joint_value = group.getCurrentJointValues();
 
 		for(int i = 0; i<joint_value.size(); i++){
-			printf("%lf\n", joint_value[i]);
+			joint_value[i] = joint_value[i]*180/M_PI;
+			printf("Joint %d: %lf\n",i+1 joint_value[i]);
 		}
-
 }
 
 bool try_move_to_named_target(moveit::planning_interface::MoveGroup& group,
@@ -152,7 +153,7 @@ int main(int argc, char **argv)
 
   group.setPlanningTime(30.0);
 
-  try_move_to_named_target(group, my_plan, "home", 100);
+  //try_move_to_named_target(group, my_plan, "home", 100);
 
   std::vector<double> joint_target_1;
   std::vector<double> joint_target_2;
@@ -192,9 +193,11 @@ int main(int argc, char **argv)
 	break;
 
       case 2: //light on
+/*
 	io_srv.request.fun = 2;
 	io_srv.request.ch = 3;
 	io_srv.request.value = 1.0;
+*/
 	if (set_io_client.call(io_srv))
 	  ROS_INFO("Set IO success");
 	else
