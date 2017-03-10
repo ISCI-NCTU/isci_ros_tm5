@@ -58,6 +58,7 @@ void get_current_joint_values(moveit::planning_interface::MoveGroup& group,
 		joint_value = group.getCurrentJointValues();
     record_joint = group.getCurrentJointValues();
 
+    ROS_INFO("In get_current_joint_values()");
 		for(int i = 0; i<joint_value.size(); i++){
 			joint_value[i] = joint_value[i]*180/M_PI;
 			printf("Joint %d: %lf\n",i+1, joint_value[i]);
@@ -232,13 +233,13 @@ int main(int argc, char **argv)
 	ROS_INFO("Read Joints Values");
 	get_current_joint_values(group, my_plan, record_joint_1);
 
-  printf("*****************************************************************");
+  ROS_INFO("In main");
 	for(int i = 0; i<record_joint_1.size(); i++){
 		joint_value = record_joint_1[i]*180/M_PI;
 		printf("Joint %d: degree: %lf, rad: %lf\n", i+1, joint_value, record_joint_1[i]);
 	}
-  printf("******************************************************************");</record_joint_1>
   //try_move_to_named_target(group, my_plan, "ready", 100);
+  //wait 3 seconds
   sleep(3);
 /*
   try_move_to_joint_target(group, my_plan, record_joint_1, 100);
