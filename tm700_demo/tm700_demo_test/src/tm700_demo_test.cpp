@@ -231,10 +231,23 @@ int main(int argc, char **argv)
 	//try_move_to_joint_target(group, my_plan, joint_target_1, 100);
 	ROS_INFO("Read Joints Values");
 	get_current_joint_values(group, my_plan, record_joint_1);
+
+  printf("*****************************************************************");
 	for(int i = 0; i<record_joint_1.size(); i++){
 		joint_value = record_joint_1[i]*180/M_PI;
 		printf("Joint %d: degree: %lf, rad: %lf\n", i+1, joint_value, record_joint_1[i]);
 	}
+  printf("******************************************************************");</record_joint_1>
+  //try_move_to_named_target(group, my_plan, "ready", 100);
+  sleep(3);
+/*
+  try_move_to_joint_target(group, my_plan, record_joint_1, 100);
+  sleep(3);
+  try_move_to_joint_target(group, my_plan, joint_target_1, 100);
+  sleep(3);
+  try_move_to_joint_target(group, my_plan, joint_target_2, 100);
+  sleep(3);
+*/
 	break;
 
       case 6: //gripper on
