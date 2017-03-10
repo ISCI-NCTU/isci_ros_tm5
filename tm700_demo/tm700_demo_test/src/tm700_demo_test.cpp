@@ -185,7 +185,7 @@ int main(int argc, char **argv)
   int step = 0;
 
   while (ros::ok()) {
-    switch (step) {
+    switch (5) {
       case 0: //gripper off
 	io_srv.request.fun = 2;
 	io_srv.request.ch = 0;
@@ -238,12 +238,13 @@ int main(int argc, char **argv)
 		joint_value = record_joint_1[i]*180/M_PI;
 		printf("Joint %d: degree: %lf, rad: %lf\n", i+1, joint_value, record_joint_1[i]);
 	}
-  //try_move_to_named_target(group, my_plan, "ready", 100);
+  try_move_to_named_target(group, my_plan, "ready", 100);
   //wait 3 seconds
   sleep(3);
-/*
+
   try_move_to_joint_target(group, my_plan, record_joint_1, 100);
   sleep(3);
+/*
   try_move_to_joint_target(group, my_plan, joint_target_1, 100);
   sleep(3);
   try_move_to_joint_target(group, my_plan, joint_target_2, 100);
