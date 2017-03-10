@@ -38,47 +38,38 @@
 #include <fstream>
 #include <string>
 #include <vector>
-
+#include <cmath>
 
 #include "tm_msgs/SetIO.h"
 //#include "tm_msgs/SetIORequest.h"
 //#include "tm_msgs/SetIOResponse.h"
 
-//added by Yu-Hsien, 2017/3/9
-//get the current joint value of each joint
-bool get_current_joint_value(moveit::planning_interface::MoveGroup& group,
-                                moveit::planning_interface::MoveGroup::Plan& plan,
-															  const std::string& target_name,
-															  unsigned int max_try_times = 1
-															){
-			if(!ros::ok()) return false;
-			bool success = false;
 
-			for(unsigned int i= 0; i<max_try_times; i++){
 
-				group.getCurrentJointValues(target_name);
-        for(int i = 0; i<target_name.size(); i++){
-					printf("%f\n", target_name[i]);
-				}
+//get current joint values of TM5
+void get_current_joint_values(moveit::planning_interface::MoveGroup& group,
+                              moveit::planning_interface::MoveGroup::Plan& plan,
+                                                            std::vector<double>& record_joint
+                                                        ){
+        //if(!ros::ok()) return false;
+        bool success = false;
 
-				if(group.move()){
-					success = true;
-					break;
-				}
-				else {
-					if(!ros::ok()) break;
-					sleep(1);
-				}
-			}
-			return success;
+        std::vector<double> joint_value;
+        joint_value = group.getCurrentJointValues();
+    record_joint = group.getCurrentJointValues();
+
+    ROS_INFO("In get_current_joint_values()");
+        for(int i = 0; i<joint_value.size(); i++){
+            joint_value[i] = joint_value[i]*180/M_PI;
+            printf("Joint %d: %lf\n",i+1, joint_value[i]);
+        }
 }
 
-
 bool try_move_to_named_target(moveit::planning_interface::MoveGroup& group,
-			      moveit::planning_interface::MoveGroup::Plan& plan,
-			      const std::string& target_name,
-			      unsigned int max_try_times = 1
-			     ) {
+                  moveit::planning_interface::MoveGroup::Plan& plan,
+                  const std::string& target_name,
+                  unsigned int max_try_times = 1
+                 ) {
   if(!ros::ok()) return false;
   bool success = false;
 
@@ -99,10 +90,10 @@ bool try_move_to_named_target(moveit::planning_interface::MoveGroup& group,
 }
 
 bool try_move_to_joint_target(moveit::planning_interface::MoveGroup& group,
-			      moveit::planning_interface::MoveGroup::Plan& plan,
-			      const std::vector<double>& joint_target,
-			      unsigned int max_try_times = 1
-			     ) {
+                  moveit::planning_interface::MoveGroup::Plan& plan,
+                  const std::vector<double>& joint_target,
+                  unsigned int max_try_times = 1
+                 ) {
   if(!ros::ok()) return false;
   bool success = false;
 
@@ -165,10 +156,16 @@ int main(int argc, char **argv)
 
   group.setPlanningTime(30.0);
 
-  try_move_to_named_target(group, my_plan, "home", 100);
+  //try_move_to_named_target(group, my_plan, "home", 100);
 
   std::vector<double> joint_target_1;
   std::vector<double> joint_target_2;
+
+    std::vector<double> record_joint_1;
+    std::vector<double> record_joint_2;
+    std::vector<double> record_joint_3;
+
+  double joint_value = 0;
 
   joint_target_1.assign(6, 0.0f);
   joint_target_1[0] = 0.0174533*( 30.0);
@@ -186,71 +183,117 @@ int main(int argc, char **argv)
   joint_target_2[4] = 0.0174533*(120.0);
 
   int step = 0;
+  int flag = 0;
 
   while (ros::ok()) {
-    switch (step) {
-      case 0: //gripper off
-	io_srv.request.fun = 2;
-	io_srv.request.ch = 0;
-	io_srv.request.value = 0.0;
-	if (set_io_client.call(io_srv))
-	  ROS_INFO("Set IO success");
-	else
-	  ROS_WARN("Failed to call service set_io");
-	break;
+    switch (5) {
 
-      case 1: //move to ready
-	ROS_INFO("move...");
-	try_move_to_named_target(group, my_plan, "ready", 100);
-	break;
+     case 0: //gripper off
+       io_srv.request.fun = 2;
+       io_srv.request.ch = 0;
+       io_srv.request.value = 0.0;
 
-      case 2: //light on
-	io_srv.request.fun = 2;
-	io_srv.request.ch = 3;
-	io_srv.request.value = 1.0;
-	if (set_io_client.call(io_srv))
-	  ROS_INFO("Set IO success");
-	else
-	  ROS_WARN("Failed to call service set_io");
-	break;
+       if (set_io_client.call(io_srv))
+         ROS_INFO("Set IO success");
+       else
+         ROS_WARN("Failed to call service set_io");
+       break;
 
-      case 3: //wait 3 sec
-	sleep(3);
-	break;
+     case 1: //move to ready
+       ROS_INFO("move...");
+       //try_move_to_named_target(group, my_plan, "ready", 100);
+       break;
 
-      case 4: //light off
-	io_srv.request.fun = 2;
-	io_srv.request.ch = 3;
-	io_srv.request.value = 0.0;
-	if (set_io_client.call(io_srv))
-	  ROS_INFO("Set IO success");
-	else
-	  ROS_WARN("Failed to call service set_io");
-	break;
+     case 2: //light on
+   /*
+       io_srv.request.fun = 2;
+       io_srv.request.ch = 3;
+       io_srv.request.value = 1.0;
+   */
+       if (set_io_client.call(io_srv))
+         ROS_INFO("Set IO success");
+       else
+         ROS_WARN("Failed to call service set_io");
+       break;
 
-      case 5: //move 1
-	ROS_INFO("move...");
-	try_move_to_joint_target(group, my_plan, joint_target_1, 100);
-	break;
+     case 3: //wait 3 sec
+       sleep(3);
+       break;
 
-      case 6: //gripper on
-	io_srv.request.fun = 2;
-	io_srv.request.ch = 0;
-	io_srv.request.value = 1.0;
-	if (set_io_client.call(io_srv))
-	  ROS_INFO("Set IO success");
-	else
-	  ROS_WARN("Failed to call service set_io");
-	break;
+    case 4: //light off
+      io_srv.request.fun = 2;
+      io_srv.request.ch = 3;
+      io_srv.request.value = 0.0;
+      if (set_io_client.call(io_srv))
+        ROS_INFO("Set IO success");
+      else
+        ROS_WARN("Failed to call service set_io");
+      break;
 
-      case 7: //wait 1 sec
-	sleep(1);
-	break;
+    case 5: //move 1
+      //ROS_INFO("move...");
+      //try_move_to_joint_target(group, my_plan, joint_target_1, 100);
+      ROS_INFO("Teaching Pose 1...");
+    while(flag == 0){
+      printf("Finish Teaching? Yes: 1, No:0\n");
+      scanf("%d", &flag);
+      get_current_joint_values(group, my_plan, record_joint_1);
+    }
+    flag = 0;
 
-      case 8: //move 2...
-	ROS_INFO("move...");
-	try_move_to_joint_target(group, my_plan, joint_target_2, 100);
-	break;
+    ROS_INFO("Teaching Pose 2...");
+    while(flag == 0){
+      printf("Finish Teaching? Yes: 1, No:0\n");
+      scanf("%d", &flag);
+      get_current_joint_values(group, my_plan, record_joint_2);
+    }
+    flag = 0;
+
+    ROS_INFO("Teaching Pose 3...");
+    while(flag == 0){
+      printf("Finish Teaching? Yes: 1, No:0\n");
+      scanf("%d", &flag);
+      get_current_joint_values(group, my_plan, record_joint_3);
+    }
+
+    //ROS_INFO("Teaching Pose 1...");
+      for(int i = 0; i<record_joint_1.size(); i++){
+          joint_value = record_joint_1[i]*180/M_PI;
+          printf("Joint %d: degree: %lf, rad: %lf\n", i+1, joint_value, record_joint_1[i]);
+      }
+
+    while(ros::ok()){
+      try_move_to_named_target(group, my_plan, "home", 100);
+      //wait 3 seconds
+      sleep(3);
+      try_move_to_joint_target(group, my_plan, record_joint_1, 100);
+      sleep(3);
+      try_move_to_joint_target(group, my_plan, record_joint_2, 100);
+      sleep(3);
+      try_move_to_joint_target(group, my_plan, record_joint_3, 100);
+      sleep(3);
+    }
+
+      break;
+
+    case 6: //gripper on
+      io_srv.request.fun = 2;
+      io_srv.request.ch = 0;
+      io_srv.request.value = 1.0;
+      if (set_io_client.call(io_srv))
+        ROS_INFO("Set IO success");
+      else
+        ROS_WARN("Failed to call service set_io");
+      break;
+
+    case 7: //wait 1 sec
+      sleep(1);
+      break;
+
+    case 8: //move 2...
+      ROS_INFO("move...");
+      //try_move_to_joint_target(group, my_plan, joint_target_2, 100);
+      break;
     }
     step = (step + 1) % 9;
   }
