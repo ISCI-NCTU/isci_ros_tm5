@@ -183,93 +183,117 @@ int main(int argc, char **argv)
   joint_target_2[4] = 0.0174533*(120.0);
 
   int step = 0;
+  int flag = 0;
 
   while (ros::ok()) {
     switch (5) {
-      case 0: //gripper off
-	io_srv.request.fun = 2;
-	io_srv.request.ch = 0;
-	io_srv.request.value = 0.0;
-	if (set_io_client.call(io_srv))
-	  ROS_INFO("Set IO success");
-	else
-	  ROS_WARN("Failed to call service set_io");
-	break;
 
-      case 1: //move to ready
-	ROS_INFO("move...");
-	//try_move_to_named_target(group, my_plan, "ready", 100);
-	break;
+     case 0: //gripper off
+	   io_srv.request.fun = 2;
+	   io_srv.request.ch = 0;
+	   io_srv.request.value = 0.0;
 
-      case 2: //light on
-/*
-	io_srv.request.fun = 2;
-	io_srv.request.ch = 3;
-	io_srv.request.value = 1.0;
-*/
-	if (set_io_client.call(io_srv))
-	  ROS_INFO("Set IO success");
-	else
-	  ROS_WARN("Failed to call service set_io");
-	break;
+	   if (set_io_client.call(io_srv))
+	     ROS_INFO("Set IO success");
+	   else
+	     ROS_WARN("Failed to call service set_io");
+	   break;
 
-      case 3: //wait 3 sec
-	sleep(3);
-	break;
+     case 1: //move to ready
+	   ROS_INFO("move...");
+	   //try_move_to_named_target(group, my_plan, "ready", 100);
+	   break;
 
-      case 4: //light off
-	io_srv.request.fun = 2;
-	io_srv.request.ch = 3;
-	io_srv.request.value = 0.0;
-	if (set_io_client.call(io_srv))
-	  ROS_INFO("Set IO success");
-	else
-	  ROS_WARN("Failed to call service set_io");
-	break;
+     case 2: //light on
+   /*
+	   io_srv.request.fun = 2;
+	   io_srv.request.ch = 3;
+	   io_srv.request.value = 1.0;
+   */
+	   if (set_io_client.call(io_srv))
+	     ROS_INFO("Set IO success");
+	   else
+	     ROS_WARN("Failed to call service set_io");
+	   break;
 
-      case 5: //move 1
-	//ROS_INFO("move...");
-	//try_move_to_joint_target(group, my_plan, joint_target_1, 100);
-	ROS_INFO("Read Joints Values");
-	get_current_joint_values(group, my_plan, record_joint_1);
+     case 3: //wait 3 sec
+	   sleep(3);
+	   break;
 
-  ROS_INFO("In main");
-	for(int i = 0; i<record_joint_1.size(); i++){
-		joint_value = record_joint_1[i]*180/M_PI;
-		printf("Joint %d: degree: %lf, rad: %lf\n", i+1, joint_value, record_joint_1[i]);
-	}
-  try_move_to_named_target(group, my_plan, "ready", 100);
-  //wait 3 seconds
-  sleep(3);
+    case 4: //light off
+	  io_srv.request.fun = 2;
+	  io_srv.request.ch = 3;
+	  io_srv.request.value = 0.0;
+	  if (set_io_client.call(io_srv))
+	    ROS_INFO("Set IO success");
+	  else
+	    ROS_WARN("Failed to call service set_io");
+	  break;
 
-  try_move_to_joint_target(group, my_plan, record_joint_1, 100);
-  sleep(3);
-/*
-  try_move_to_joint_target(group, my_plan, joint_target_1, 100);
-  sleep(3);
-  try_move_to_joint_target(group, my_plan, joint_target_2, 100);
-  sleep(3);
-*/
-	break;
+    case 5: //move 1
+	  //ROS_INFO("move...");
+	  //try_move_to_joint_target(group, my_plan, joint_target_1, 100);
+	  ROS_INFO("Teaching Pose 1...");
+    while(flag == 0){
+      printf("Finish Teaching? Yes: 1, No:0\n");
+      scanf("%d", &flag);
+      get_current_joint_values(group, my_plan, record_joint_1);
+    }
+    flag = 0;
 
-      case 6: //gripper on
-	io_srv.request.fun = 2;
-	io_srv.request.ch = 0;
-	io_srv.request.value = 1.0;
-	if (set_io_client.call(io_srv))
-	  ROS_INFO("Set IO success");
-	else
-	  ROS_WARN("Failed to call service set_io");
-	break;
+    ROS_INFO("Teaching Pose 2...");
+    while(flag == 0){
+      printf("Finish Teaching? Yes: 1, No:0\n");
+      scanf("%d", &flag);
+      get_current_joint_values(group, my_plan, record_joint_2);
+    }
+    flag = 0;
 
-      case 7: //wait 1 sec
-	sleep(1);
-	break;
+    ROS_INFO("Teaching Pose 3...");
+    while(flag == 0){
+      printf("Finish Teaching? Yes: 1, No:0\n");
+      scanf("%d", &flag);
+      get_current_joint_values(group, my_plan, record_joint_3);
+    }
 
-      case 8: //move 2...
-	ROS_INFO("move...");
-	//try_move_to_joint_target(group, my_plan, joint_target_2, 100);
-	break;
+    //ROS_INFO("Teaching Pose 1...");
+	  for(int i = 0; i<record_joint_1.size(); i++){
+		  joint_value = record_joint_1[i]*180/M_PI;
+		  printf("Joint %d: degree: %lf, rad: %lf\n", i+1, joint_value, record_joint_1[i]);
+	  }
+
+    while(ros::ok()){
+      try_move_to_named_target(group, my_plan, "home", 100);
+      //wait 3 seconds
+      sleep(3);
+      try_move_to_joint_target(group, my_plan, record_joint_1, 100);
+      sleep(3);
+      try_move_to_joint_target(group, my_plan, record_joint_2, 100);
+      sleep(3);
+      try_move_to_joint_target(group, my_plan, record_joint_3, 100);
+      sleep(3);
+    }
+
+	  break;
+
+    case 6: //gripper on
+	  io_srv.request.fun = 2;
+	  io_srv.request.ch = 0;
+	  io_srv.request.value = 1.0;
+	  if (set_io_client.call(io_srv))
+	    ROS_INFO("Set IO success");
+	  else
+	    ROS_WARN("Failed to call service set_io");
+	  break;
+
+    case 7: //wait 1 sec
+	  sleep(1);
+	  break;
+
+    case 8: //move 2...
+	  ROS_INFO("move...");
+	  //try_move_to_joint_target(group, my_plan, joint_target_2, 100);
+	  break;
     }
     step = (step + 1) % 9;
   }
