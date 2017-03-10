@@ -46,31 +46,20 @@
 
 //added by Yu-Hsien, 2017/3/9
 //get the current joint value of each joint
-bool get_current_joint_value(moveit::planning_interface::MoveGroup& group,
-                                moveit::planning_interface::MoveGroup::Plan& plan,
-															  const std::string& target_name,
-															  unsigned int max_try_times = 1
-															){
-			if(!ros::ok()) return false;
-			bool success = false;
+void get_current_joint_values(moveit::planning_interface::MoveGroup& group,
+                              moveit::planning_interface::MoveGroup::Plan& plan,
+														  unsigned int max_try_times = 1
+														){
+		//if(!ros::ok()) return false;
+		bool success = false;
 
-			for(unsigned int i= 0; i<max_try_times; i++){
+		std::vector<double> joint_value;
+		joint_value = group.getCurrentJointValues();
 
-				group.getCurrentJointValues(target_name);
-        for(int i = 0; i<target_name.size(); i++){
-					printf("%f\n", target_name[i]);
-				}
+		for(int i = 0; i<joint_value.size(); i++){
+			printf("%lf\n", joint_value[i]);
+		}
 
-				if(group.move()){
-					success = true;
-					break;
-				}
-				else {
-					if(!ros::ok()) break;
-					sleep(1);
-				}
-			}
-			return success;
 }
 
 
