@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<robot name="tm700_demo" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- tm700 -->
+  <xacro:include filename="$(find tm_description)/urdf/tm700.urdf.xacro" />
+  <!-- arm -->
+  <xacro:tm700_robot prefix="" joint_limited="true"/>
+  
+  <link name="world" />
+
+  <joint name="world_joint" type="fixed">
+    <parent link="world" />
+    <child link = "base_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+  
+  <link name="floor">
+    <visual>
+      <geometry>
+	<box size="0.9 0.9 0.04"/>
+      </geometry>
+      <origin xyz="0.0 0.0 -0.02"/>
+      <material name="FloorWood">
+        <color rgba="1.0 0.87 0.68 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+	<box size="1.0 0.9 0.04"/>
+      </geometry>
+      <origin xyz="0.0 0.0 -0.02"/>
+    </collision>
+  </link>
+  
+  <joint name="world_to_floor" type="fixed">
+    <parent link="world" />
+    <child link="floor" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+  
+</robot>
