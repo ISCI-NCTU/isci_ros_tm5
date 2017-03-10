@@ -44,8 +44,7 @@
 //#include "tm_msgs/SetIORequest.h"
 //#include "tm_msgs/SetIOResponse.h"
 
-//added by Yu-Hsien, 2017/3/9
-//get the current joint value of each joint
+
 void get_current_joint_values(moveit::planning_interface::MoveGroup& group,
                               moveit::planning_interface::MoveGroup::Plan& plan,
 														  unsigned int max_try_times = 1
@@ -61,7 +60,6 @@ void get_current_joint_values(moveit::planning_interface::MoveGroup& group,
 		}
 
 }
-
 
 bool try_move_to_named_target(moveit::planning_interface::MoveGroup& group,
 			      moveit::planning_interface::MoveGroup::Plan& plan,
@@ -190,7 +188,7 @@ int main(int argc, char **argv)
 
       case 1: //move to ready
 	ROS_INFO("move...");
-	try_move_to_named_target(group, my_plan, "ready", 100);
+	//try_move_to_named_target(group, my_plan, "ready", 100);
 	break;
 
       case 2: //light on
@@ -218,8 +216,10 @@ int main(int argc, char **argv)
 	break;
 
       case 5: //move 1
-	ROS_INFO("move...");
-	try_move_to_joint_target(group, my_plan, joint_target_1, 100);
+	//ROS_INFO("move...");
+	//try_move_to_joint_target(group, my_plan, joint_target_1, 100);
+	ROS_INFO("Read Joints Values");
+	get_current_joint_values(group, my_plan);
 	break;
 
       case 6: //gripper on
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
 
       case 8: //move 2...
 	ROS_INFO("move...");
-	try_move_to_joint_target(group, my_plan, joint_target_2, 100);
+	//try_move_to_joint_target(group, my_plan, joint_target_2, 100);
 	break;
     }
     step = (step + 1) % 9;
