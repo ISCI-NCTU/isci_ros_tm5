@@ -48,13 +48,15 @@
 
 //get current joint values of TM5
 void get_current_joint_values(moveit::planning_interface::MoveGroup& group,
-                              moveit::planning_interface::MoveGroup::Plan& plan
+                              moveit::planning_interface::MoveGroup::Plan& plan,
+															std::vector<double>& record_joint
 														){
 		//if(!ros::ok()) return false;
 		bool success = false;
 
 		std::vector<double> joint_value;
 		joint_value = group.getCurrentJointValues();
+    record_joint = group.getCurrentJointValues();
 
 		for(int i = 0; i<joint_value.size(); i++){
 			joint_value[i] = joint_value[i]*180/M_PI;
@@ -158,6 +160,12 @@ int main(int argc, char **argv)
   std::vector<double> joint_target_1;
   std::vector<double> joint_target_2;
 
+	std::vector<double> record_joint_1;
+	std::vector<double> record_joint_2;
+	std::vector<double> record_joint_3;
+
+  double joint_value = 0;
+
   joint_target_1.assign(6, 0.0f);
   joint_target_1[0] = 0.0174533*( 30.0);
   joint_target_1[1] = 0.0174533*( 15.0);
@@ -222,7 +230,11 @@ int main(int argc, char **argv)
 	//ROS_INFO("move...");
 	//try_move_to_joint_target(group, my_plan, joint_target_1, 100);
 	ROS_INFO("Read Joints Values");
-	get_current_joint_values(group, my_plan);
+	get_current_joint_values(group, my_plan, record_joint_1);
+	for(int i = 0; i<record_joint_1.size(); i++){
+		joint_value = record_joint_1[i]*180/M_PI;
+		printf("Joint %d: degree: %lf, rad: %lf\n", i+1, joint_value, record_joint_1[i]);
+	}
 	break;
 
       case 6: //gripper on
